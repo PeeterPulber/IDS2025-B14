@@ -2,10 +2,7 @@ import nest_asyncio
 nest_asyncio.apply()
 from playwright.sync_api import sync_playwright
 
-with sync_playwright() as pw:
-    firefox = pw.firefox.launch(headless=False)
-    page = firefox.new_page()
-    url = "https://www.metal-archives.com/bands/Brad_Jurjens/3540460030"
+def scrape_band(page,url):
     page.goto(url)
     page.wait_for_selector("table.display.discog tbody")
 
@@ -21,8 +18,17 @@ with sync_playwright() as pw:
         year = cells[2].inner_text()
         releases.append(year)
 
-print(genre)
-print(formed)
-print(years)
-print(location)
-print(releases)
+    return {"genre": genre, "formed": formed, "years": years, "location": location, "releases": releases}
+
+with sync_playwright() as pw:
+    firefox = pw.firefox.launch(headless=False)
+    page = firefox.new_page()
+    url = "https://www.metal-archives.com/bands/Brad_Jurjens/3540460030"
+    data = scrape_band(page,url)
+
+
+print(data["genre"])
+print(data["formed"])
+print(data["years"])
+print(data["location"])
+print(data["releases"])
