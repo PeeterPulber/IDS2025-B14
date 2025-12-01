@@ -1,6 +1,7 @@
 import nest_asyncio
 nest_asyncio.apply()
 from playwright.sync_api import sync_playwright
+import time
 
 def scrape_band(page,url):
     page.goto(url)
@@ -31,4 +32,11 @@ with sync_playwright() as pw:
     for row in rows:
         link = row.query_selector("td.sorting_1 a").get_attribute("href")
         links.append(link)
-    print(links)
+
+    bands = []
+
+    for link in links:
+        time.sleep(3)
+        bands.append(scrape_band(page,link))
+
+    print(bands)
