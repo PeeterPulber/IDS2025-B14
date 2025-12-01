@@ -14,7 +14,15 @@ with sync_playwright() as pw:
     years = page.query_selector("dl.clear dd").inner_text()
     location = page.query_selector("dl.float_left dd:nth-of-type(2)").inner_text()
 
+    releases_rows = page.query_selector_all("table.display.discog tbody tr")
+    releases = []
+    for row in releases_rows:
+        cells = row.query_selector_all("td")
+        year = cells[2].inner_text()
+        releases.append(year)
+
 print(genre)
 print(formed)
 print(years)
 print(location)
+print(releases)
