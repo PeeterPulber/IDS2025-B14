@@ -21,14 +21,14 @@ def scrape_band(page,url):
     return {"genre": genre, "formed": formed, "years": years, "location": location, "releases": releases}
 
 with sync_playwright() as pw:
-    firefox = pw.firefox.launch(headless=False)
-    page = firefox.new_page()
-    url = "https://www.metal-archives.com/bands/Brad_Jurjens/3540460030"
-    data = scrape_band(page,url)
-
-
-print(data["genre"])
-print(data["formed"])
-print(data["years"])
-print(data["location"])
-print(data["releases"])
+    browser = pw.firefox.launch(headless=False)
+    page = browser.new_page()
+    url = "https://www.metal-archives.com/lists/EE"
+    page.goto(url)
+    page.wait_for_selector("table.display.dataTable tbody tr")
+    rows = page.query_selector_all("table.display.dataTable tbody tr")
+    links = []
+    for row in rows:
+        link = row.query_selector("td.sorting_1 a").get_attribute("href")
+        links.append(link)
+    print(links)
