@@ -1,6 +1,7 @@
 import nest_asyncio
 nest_asyncio.apply()
 from playwright.sync_api import sync_playwright
+import json
 import time
 
 def scrape_band(page,url):
@@ -21,10 +22,16 @@ def scrape_band(page,url):
 
     return {"genre": genre, "formed": formed, "years": years, "location": location, "releases": releases}
 
+def save_band(line, filename):
+    with open(filename, "a", encoding="utf-8") as f:
+        f.write(json.dumps(line, ensure_ascii=False) + "\n")
+
+url = "https://www.metal-archives.com/lists/EE"
+filename = "bandsEE.jsonl"
+
 with sync_playwright() as pw:
     browser = pw.firefox.launch(headless=False)
     page = browser.new_page()
-    url = "https://www.metal-archives.com/lists/EE"
     page.goto(url)
     page.wait_for_selector("table.display.dataTable tbody tr")
     rows = page.query_selector_all("table.display.dataTable tbody tr")
@@ -33,10 +40,6 @@ with sync_playwright() as pw:
         link = row.query_selector("td.sorting_1 a").get_attribute("href")
         links.append(link)
 
-    bands = []
-
     for link in links:
         time.sleep(3)
-        bands.append(scrape_band(page,link))
-
-    print(bands)
+        save_band(scrape_band(page,link), filename)
