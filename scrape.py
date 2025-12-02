@@ -17,6 +17,8 @@ def scrape_band(page,url):
     releases = []
     for row in releases_rows:
         cells = row.query_selector_all("td")
+        if len(cells) == 1: # No releases
+            break
         year = cells[2].inner_text()
         releases.append(year)
 
@@ -36,6 +38,7 @@ with sync_playwright() as pw:
     page.wait_for_selector("table.display.dataTable tbody tr")
     rows = page.query_selector_all("table.display.dataTable tbody tr")
     links = []
+
     for row in rows:
         link = row.query_selector("td.sorting_1 a").get_attribute("href")
         links.append(link)
