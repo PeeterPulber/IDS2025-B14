@@ -3,6 +3,16 @@ nest_asyncio.apply()
 from playwright.sync_api import sync_playwright
 import json
 import time
+import os
+
+def load_urls(filename):
+    urls = set()
+    if os.path.exists(filename):
+        with open(filename, "r", encoding="utf-8") as f:
+            for line in f:
+                if line.strip():
+                    urls.add(json.loads(line)["url"])
+    return urls
 
 def scrape_band(page,url):
     page.goto(url)
@@ -22,7 +32,7 @@ def scrape_band(page,url):
         year = cells[2].inner_text()
         releases.append(year)
 
-    return {"genre": genre, "formed": formed, "years": years, "location": location, "releases": releases}
+    return {"url": url, "genre": genre, "formed": formed, "years": years, "location": location, "releases": releases}
 
 def save_band(line, filename):
     with open(filename, "a", encoding="utf-8") as f:
@@ -30,19 +40,25 @@ def save_band(line, filename):
 
 url = "https://www.metal-archives.com/lists/EE"
 filename = "bandsEE.jsonl"
+scraped = load_urls(filename)
 
 with sync_playwright() as pw:
-    browser = pw.firefox.launch(headless=False)
+    browser = pw.firefox.launch(headless=True)
     page = browser.new_page()
     page.goto(url)
     page.wait_for_selector("table.display.dataTable tbody tr")
     rows = page.query_selector_all("table.display.dataTable tbody tr")
     links = []
 
-    for row in rows:
-        link = row.query_selector("td.sorting_1 a").get_attribute("href")
+    for band in rows:
+        link = band.query_selector("td.sorting_1 a").get_attribute("href")
         links.append(link)
 
-    for link in links:
-        time.sleep(3)
-        save_band(scrape_band(page,link), filename)
+    for link in links[:6]:
+        if link not in scraped:
+            time.sleep(3)
+            save_band(scrape_band(page,link), filename)
+
+    browser.close()
+
+print("Finished scraping")
