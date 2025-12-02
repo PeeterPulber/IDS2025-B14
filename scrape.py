@@ -54,7 +54,7 @@ with sync_playwright() as pw:
         link = band.query_selector("td.sorting_1 a").get_attribute("href")
         links.append(link)
 
-    for link in links[:6]:
+    for link in links:
         if link not in scraped:
             time.sleep(3)
             save_band(scrape_band(page,link), filename)
