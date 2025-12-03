@@ -19,5 +19,9 @@ cleandf["genre"] = cleandf["genre"].str.split("/")
 
 mlb = MultiLabelBinarizer()
 genres = mlb.fit_transform(cleandf['genre'])
+genres = pd.DataFrame(genres, columns=mlb.classes_, index=cleandf.index)
 
-print(genres)
+cleandf = cleandf.drop('genre',axis = 1)
+cleandf = cleandf.join(genres)
+
+print(cleandf.head())
