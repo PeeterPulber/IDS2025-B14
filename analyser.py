@@ -20,8 +20,7 @@ other = genres_by_year.loc[:, small_genres].sum(axis=1)
 
 major_genres = pd.concat([other.rename("Other"), major_genres], axis=1)
 
-num_genres = major_genres.shape[1]
-colours = list(plt.cm.tab20.colors[:num_genres-1])
+colours = list(plt.cm.tab20.colors)
 colours.insert(0, "#c2904f")
 
 ax = major_genres.plot(kind="bar", stacked=True, figsize=(12, 8), color=colours,
@@ -30,5 +29,5 @@ ax = major_genres.plot(kind="bar", stacked=True, figsize=(12, 8), color=colours,
 # Reverse legend order for ease of reading
 handles, labels = ax.get_legend_handles_labels()
 ax.legend(handles[::-1], labels[::-1], title="Metal subgenres")
-plt.savefig("genretimeline.pdf")
+#plt.savefig("genretimeline.pdf")
 plt.show()
