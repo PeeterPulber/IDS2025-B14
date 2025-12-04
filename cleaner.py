@@ -1,8 +1,7 @@
 import pandas as pd
-import sklearn
 import re
 from datetime import date
-from sklearn.preprocessing import OneHotEncoder, MultiLabelBinarizer
+from sklearn.preprocessing import MultiLabelBinarizer
 
 def parse_years(r):
     # Bands are assumed to have been active during years when they released music
@@ -78,4 +77,4 @@ years = mlb_years.fit_transform(cleandf["years"])
 years = pd.DataFrame(years, columns=mlb_years.classes_, index=cleandf.index)
 cleandf = cleandf.drop("years",axis = 1)
 cleandf = cleandf.join(years)
-print(cleandf["2004"])
+print(cleandf.shape)
