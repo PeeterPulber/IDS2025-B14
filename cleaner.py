@@ -74,7 +74,16 @@ cleandf["years"] = cleandf.apply(parse_years, axis=1)
 # Vectorize years of activity
 mlb_years = MultiLabelBinarizer()
 years = mlb_years.fit_transform(cleandf["years"])
-years = pd.DataFrame(years, columns=mlb_years.classes_, index=cleandf.index)
+years = pd.DataFrame(years, columns=[f"active_{y}" for y in mlb_years.classes_], index=cleandf.index)
 cleandf = cleandf.drop("years",axis = 1)
 cleandf = cleandf.join(years)
-print(cleandf.shape)
+
+# Vectorize releases
+mlb_releases = MultiLabelBinarizer()
+releases = mlb_releases.fit_transform(cleandf["releases"])
+releases = pd.DataFrame(releases, columns=[f"release_{y}" for y in mlb_releases.classes_], index=cleandf.index)
+cleandf = cleandf.drop("releases",axis = 1)
+cleandf = cleandf.join(releases)
+
+pd.set_option("display.max_columns", None)
+print(cleandf.head())
