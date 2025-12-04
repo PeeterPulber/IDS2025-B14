@@ -11,7 +11,7 @@ def parse_years(r):
     if cleaned != "N/A" and cleaned != "?":
         # Get rid of text in parentheses
         cleaned = re.sub(r"\s\(.*\)", "", cleaned)
-        cleaned = cleaned.replace("?", "").split(",")
+        cleaned = cleaned.split(",")
         # Periods of activity
         for p in cleaned:
             p = p.strip().split("-")
@@ -20,12 +20,12 @@ def parse_years(r):
                 if p[0].isdigit():
                     activity.add(p[0])
                 continue
-            elif p[0] == "" and p[1] == "":
+            elif p[0] == "?" and p[1] == "?":
                 continue
-            elif p[0] == "":
+            elif p[0] == "?":
                 activity.add(p[1])
                 continue
-            elif p[1] == "":
+            elif p[1] == "?":
                 activity.add(p[0])
                 continue
             elif p[1] == "present":
