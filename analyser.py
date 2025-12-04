@@ -29,5 +29,18 @@ ax = major_genres.plot(kind="bar", stacked=True, figsize=(12, 8), color=colours,
 # Reverse legend order for ease of reading
 handles, labels = ax.get_legend_handles_labels()
 ax.legend(handles[::-1], labels[::-1], title="Metal subgenres")
+plt.tight_layout()
 #plt.savefig("genretimeline.pdf")
+plt.show()
+
+relative_genres = major_genres.div(major_genres.sum(axis=1), axis=0)
+
+ax = relative_genres.plot(kind="bar", stacked=True, figsize=(12, 8), color=colours,
+                       title="Relative share of metal subgenres in Estonia over the years",
+                       xlabel="Year", ylabel="Share of active bands")
+# Reverse legend order for ease of reading
+handles, labels = ax.get_legend_handles_labels()
+ax.legend(handles[::-1], labels[::-1], title="Metal subgenres", bbox_to_anchor=(1, 1))
+plt.tight_layout()
+plt.savefig("relativegenretimeline.pdf")
 plt.show()
