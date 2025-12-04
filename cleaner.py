@@ -21,9 +21,7 @@ def parse_years(r):
             if len(p) == 1: # One year
                 if p[0].isdigit():
                     activity.add(int(p[0]))
-                    continue
-                else:
-                    continue
+                continue
             elif p[0] == "" and p[1] == "":
                 continue
             elif p[0] == "":
@@ -33,15 +31,14 @@ def parse_years(r):
                 activity.add(int(p[0]))
                 continue
             elif p[1] == "present":
-                end = int(date.today().year)
+                end = date.today().year
                 start = int(p[0])
             else:
                 end = int(p[1])
                 start = int(p[0])
             # Add years to activity set
-            while start <= end:
-                activity.add(end)
-                end -= 1
+            for year in range(start, end+1):
+                activity.add(str(year))
 
     return activity
 
@@ -74,7 +71,6 @@ cleandf.loc[mask, "formed"] = cleandf.loc[mask, "firstrelease"]
 cleandf = cleandf.dropna(subset=["formed"])
 
 # Clean the years string
-cleandf["lastrelease"] = cleandf["releases"].apply(lambda rels: rels[-1] if len(rels) > 0 else None)
 cleandf["years"] = cleandf.apply(parse_years, axis=1)
 
 print(cleandf["years"])
