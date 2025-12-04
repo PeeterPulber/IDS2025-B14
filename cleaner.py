@@ -85,4 +85,4 @@ releases = pd.DataFrame(releases, columns=[f"release_{y}" for y in mlb_releases.
 cleandf = cleandf.drop("releases",axis = 1)
 cleandf = cleandf.join(releases)
 
-df.to_csv("cleaned.csv", index=False)
+cleandf.to_csv("cleaned.csv", index=False)
