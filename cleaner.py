@@ -14,21 +14,20 @@ def parse_years(r):
         cleaned = re.sub(r"\s\(.*\)", "", cleaned)
         cleaned = cleaned.replace("?", "").split(",")
         # Periods of activity
-
         for p in cleaned:
             p = p.strip().split("-")
             # Extract years in each period
             if len(p) == 1: # One year
                 if p[0].isdigit():
-                    activity.add(int(p[0]))
+                    activity.add(p[0])
                 continue
             elif p[0] == "" and p[1] == "":
                 continue
             elif p[0] == "":
-                activity.add(int(p[1]))
+                activity.add(p[1])
                 continue
             elif p[1] == "":
-                activity.add(int(p[0]))
+                activity.add(p[0])
                 continue
             elif p[1] == "present":
                 end = date.today().year
@@ -56,11 +55,11 @@ cleandf["genre"] = cleandf["genre"].str.replace(";", "/")
 cleandf["genre"] = cleandf["genre"].str.split(r"\s*/\s*")
 
 # Vectorize genres
-mlb = MultiLabelBinarizer()
-genres = mlb.fit_transform(cleandf['genre'])
-genres = pd.DataFrame(genres, columns=mlb.classes_, index=cleandf.index)
+mlb_genre = MultiLabelBinarizer()
+genres = mlb_genre.fit_transform(cleandf["genre"])
+genres = pd.DataFrame(genres, columns=mlb_genre.classes_, index=cleandf.index)
 
-cleandf = cleandf.drop('genre',axis = 1)
+cleandf = cleandf.drop("genre",axis = 1)
 cleandf = cleandf.join(genres)
 
 # Set year of formation as the year of the first release for bands without a year of formation
@@ -73,4 +72,10 @@ cleandf = cleandf.dropna(subset=["formed"])
 # Clean the years string
 cleandf["years"] = cleandf.apply(parse_years, axis=1)
 
-print(cleandf["years"])
+# Vectorize years of activity
+mlb_years = MultiLabelBinarizer()
+years = mlb_years.fit_transform(cleandf["years"])
+years = pd.DataFrame(years, columns=mlb_years.classes_, index=cleandf.index)
+cleandf = cleandf.drop("years",axis = 1)
+cleandf = cleandf.join(years)
+print(cleandf["2004"])
