@@ -56,7 +56,7 @@ cleandf["genre"] = cleandf["genre"].str.split(r"\s*/\s*")
 # Vectorize genres
 mlb_genre = MultiLabelBinarizer()
 genres = mlb_genre.fit_transform(cleandf["genre"])
-genres = pd.DataFrame(genres, columns=mlb_genre.classes_, index=cleandf.index)
+genres = pd.DataFrame(genres, columns=[f"genre_{g}" for g in mlb_genre.classes_], index=cleandf.index)
 
 cleandf = cleandf.drop("genre",axis = 1)
 cleandf = cleandf.join(genres)
