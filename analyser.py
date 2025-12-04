@@ -42,5 +42,5 @@ ax = relative_genres.plot(kind="bar", stacked=True, figsize=(12, 8), color=colou
 handles, labels = ax.get_legend_handles_labels()
 ax.legend(handles[::-1], labels[::-1], title="Metal subgenres", bbox_to_anchor=(1, 1))
 plt.tight_layout()
-plt.savefig("relativegenretimeline.pdf")
+#plt.savefig("relativegenretimeline.pdf")
 plt.show()
