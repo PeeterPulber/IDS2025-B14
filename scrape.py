@@ -15,7 +15,11 @@ def load_urls(filename):
     return urls
 
 def scrape_band(page,url):
-    page.goto(url)
+    try:
+        page.goto(url)
+    except TimeoutError:
+        return None
+
     page.wait_for_selector("table.display.discog tbody")
 
     genre = page.query_selector("dl.float_right dd").inner_text()
@@ -38,27 +42,54 @@ def save_band(line, filename):
     with open(filename, "a", encoding="utf-8") as f:
         f.write(json.dumps(line, ensure_ascii=False) + "\n")
 
-url = "https://www.metal-archives.com/lists/EE"
-filename = "bandsEE.jsonl"
+url = "https://www.metal-archives.com/lists/FI"
+filename = "bandsFI.jsonl"
 scraped = load_urls(filename)
 
+
 with sync_playwright() as pw:
-    browser = pw.firefox.launch(headless=True)
+    browser = pw.firefox.launch(headless=False)
     page = browser.new_page()
     page.goto(url)
     page.wait_for_selector("table.display.dataTable tbody tr")
-    rows = page.query_selector_all("table.display.dataTable tbody tr")
-    links = []
+    links = set()
 
-    for band in rows:
-        link = band.query_selector("td.sorting_1 a").get_attribute("href")
-        links.append(link)
+    while True:
+        time.sleep(3)
+        rows = page.query_selector_all("table.display.dataTable tbody tr")
+        for band in rows:
+            link = band.query_selector("td.sorting_1 a").get_attribute("href")
+            links.add(link)
+        next_button = page.query_selector("a.next")
+        if "disabled" in next_button.get_attribute("class"):
+            break
 
+        next_button.click()
+
+    failed = []
     for link in links:
         if link not in scraped:
             time.sleep(3)
-            save_band(scrape_band(page,link), filename)
+            try:
+                data = scrape_band(page, link)
+                if data is None:
+                    failed.append(link)
+                    continue
 
+                save_band(data, filename)
+            except Exception as e:
+                failed.append(link)
+                continue
+
+    if failed:
+        for link in failed:
+            time.sleep(3)
+            try:
+                data = scrape_band(page, link)
+                if data:
+                    save_band(data, filename)
+            except:
+                continue
     browser.close()
 
 print("Finished scraping")
