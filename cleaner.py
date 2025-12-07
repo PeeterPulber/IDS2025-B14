@@ -22,13 +22,13 @@ def parse_years(r):
                 if p[0].isdigit():
                     activity.add(p[0])
                 continue
-            elif p[0] == "?" and p[1] == "?": # Unknown years
-                continue
             elif p[0] == "?": # Unknown start year
-                activity.add(p[1])
+                if p[1].isdigit():
+                    activity.add(p[1])
                 continue
             elif p[1] == "?": # Unknown end year
-                activity.add(p[0])
+                if p[0].isdigit():
+                    activity.add(p[0])
                 continue
             elif p[1] == "present": # Band still active
                 end = date.today().year
